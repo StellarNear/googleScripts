@@ -1,0 +1,47 @@
+function doGet(e){
+  return handleResponse(e);
+  
+}
+
+//Recieve parameter and pass it to function to handle
+
+function doPost(e){
+  return handleResponse(e);
+}  
+
+// here handle with parameter
+
+function handleResponse(request) {
+  var output  = ContentService.createTextOutput();
+  
+  //create varibles to recieve respective parameters
+  
+  var user = request.parameter.user;
+  var user_name = request.parameter.user_name;
+  var user_model = request.parameter.user_model;
+  var user_manufacturer = request.parameter.user_manufacturer;
+
+  var date = request.parameter.date;
+  var version_name = "v"+request.parameter.version_name;  //the v is to force the format not to be interpreted as date by google sheet
+  var version_code = request.parameter.version_code;
+  var id = request.parameter.id;
+  
+  
+  //open your Spread sheet by passing id
+  
+  var ss= SpreadsheetApp.openById(id);
+  var sheet=ss.getSheetByName("usage");
+  
+  sheet.appendRow([user,user_name,user_model,user_manufacturer,date,version_name,version_code]);  
+  
+  var callback = request.parameters.callback;
+  if (callback === undefined) {
+    output.setContent(JSON.stringify("Success"));
+  } else {
+    output.setContent(callback + "(" + JSON.stringify("Success") + ")");
+  }
+
+  output.setMimeType(ContentService.MimeType.JSON);
+  
+  return output;
+}
